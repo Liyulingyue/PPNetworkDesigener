@@ -90,7 +90,7 @@
 }
 
 .connection {
-    position: absolute;
+    position: relative;
     width: 2px; /* 线的宽度 */
     background-color: red; /* 线的颜色 */
     pointer-events: none; /* 防止线被点击 */
@@ -98,7 +98,7 @@
 }
 
 .arrow {
-    position: absolute;
+    position: relative;
     width: 0;
     height: 0;
     border-left: 5px solid transparent;

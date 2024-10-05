@@ -1,5 +1,8 @@
 // 定义一个函数来添加可拖拽元素
-function addDraggableElement(text, x, y) {
+function addDraggableElement(navButton, x, y) {
+    const text = navButton.textContent;
+    const fullName = navButton.getAttribute('data-fullname');
+
     // 获取elements-canvas的中心点坐标
     const canvas = document.getElementById(`elements-canvas`);
     const centerX = canvas.offsetLeft + (canvas.clientWidth / 2);
@@ -11,6 +14,7 @@ function addDraggableElement(text, x, y) {
     elem.style.top = `${centerY}px`;
     elem.style.position = 'absolute'; // 确保元素是定位的
     elem.textContent = text;
+    elem.setAttribute('data-fullname', fullName);
 
     // 拖拽逻辑（简化版）
     let isDragging = false;
