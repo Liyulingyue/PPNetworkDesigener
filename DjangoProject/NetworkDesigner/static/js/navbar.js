@@ -1,6 +1,7 @@
-function createSingleNavbarButton(name, fullname="") {
+function createSingleNavbarButton(name, fullName="") {
     const btn = document.createElement('button');
     btn.textContent = name;
+    // console.log(fullName);
     btn.classList.add('nav-btn'); // 添加类名以便后续添加样式或事件监听器
     btn.setAttribute('data-fullname', fullName); // 附加全名信息
     btn.addEventListener('click', function() {
@@ -46,8 +47,8 @@ function createNavbarButtons(obj, parentElement = navbar, depth = 0, parentName 
             createNavbarButtons(obj[key], folderContainer, depth + 1, newParentName);
         } else {
             // 如果值不是对象，则创建按钮
-            const fullname = parentName ? `${parentName}.${key}` : key;
-            const btn = createSingleNavbarButton(key, fullname);
+            const fullName = parentName ? `${parentName}.${key}` : key;
+            const btn = createSingleNavbarButton(key, fullName);
             parentElement.appendChild(btn);
         }
     }

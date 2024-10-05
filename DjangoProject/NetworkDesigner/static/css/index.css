@@ -115,3 +115,39 @@
     position: block;
     /* 可能的样式设置，如背景色、边框等 */
 }
+
+.sidebar {
+    position: block;
+    width: 5%; /* 侧边栏宽度 */
+    background-color: #f4f4f4;
+    padding: 0px;
+    box-sizing: border-box;
+    float: right;
+}
+
+.sidebar-item {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    text-align: left;
+
+    &:hover {
+        background-color: #ddd; /* 鼠标悬停时的背景色 */
+    }
+}
+
+.content {
+    position: block;
+    width: 15; /* 内容区宽度 */
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto; /* 如果内容太多，可以滚动 */
+    float: right;
+}
+
+.content-item {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+}
