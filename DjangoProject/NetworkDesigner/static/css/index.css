@@ -106,3 +106,12 @@
     border-top: 5px solid red; /* 箭头颜色 */
     pointer-events: none; /* 防止箭头被点击 */
 }
+
+.hidden {
+    display: none;
+}
+
+.folder-container {
+    position: block;
+    /* 可能的样式设置，如背景色、边框等 */
+}

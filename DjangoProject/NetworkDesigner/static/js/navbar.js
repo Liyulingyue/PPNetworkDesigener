@@ -12,9 +12,25 @@ function createNavbarButton(name) {
 
 function createNavbarFolder(name) {
     const folder = document.createElement('button');
-    folder.textContent = name;
+    folder.textContent = `${name} 📁`; // 添加一个图标或标记以区分文件夹
     folder.classList.add('nav-folder'); // 添加类名以便后续添加样式或事件监听器
-    return folder; // 返回按钮元素，以便后续添加到导航栏
+
+    const folderContainer = document.createElement('div');
+    folderContainer.classList.add('folder-container', 'hidden'); // 默认隐藏子元素
+    folderContainer.style.marginLeft = '10px'; // 可选，为了子元素缩进
+
+    // folder.appendChild(folderContainer); // 将容器添加到文件夹按钮中
+
+    folder.addEventListener('click', function() {
+        // 切换子容器的显示状态
+        folderContainer.classList.toggle('hidden');
+    });
+
+    // return folder; // 返回文件夹元素，以便后续添加到导航栏
+    return {
+        folder, // 返回文件夹元素，以便后续添加到导航栏
+        folderContainer, // 返回容器元素，以便在创建按钮时将其作为父级
+    };
 }
 
 function createNavbar() {
@@ -34,19 +50,22 @@ function createNavbar() {
                 for (let key in obj) {
                     if (typeof obj[key] === 'object' && obj[key] !== null) {
                         // 如果值是对象（可能是子模块），创建一个折叠框按钮，递归处理
-                        const folder = createNavbarFolder(key);
+                        // const folder = createNavbarFolder(key);
+                        // const folderContainer = folder.querySelector('.folder-container');
+                        const { folder, folderContainer } = createNavbarFolder(key);
                         parentElement.appendChild(folder);
-                        createButtons(obj[key], parentElement, depth + 1);
+                        parentElement.appendChild(folderContainer);
+                        createButtons(obj[key], folderContainer, depth + 1);
                     } else {
                         // 如果值不是对象，则创建按钮
-                        const btn = createNavbarButton(depth === 0 ? key : `${depth}${' '.repeat(depth)}${key}`);
+                        const btn = createNavbarButton(key);
                         parentElement.appendChild(btn);
                     }
                 }
             }
 
             // 从顶层数据开始递归创建按钮
-            createButtons(data);
+            createButtons(data, navbar);
         })
         .catch(error => {
             console.error('Error fetching navigation items:', error);
