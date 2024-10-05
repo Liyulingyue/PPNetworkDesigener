@@ -1,0 +1,189 @@
+<!DOCTYPE html> <!-- 声明文档类型为HTML5 -->
+<html lang="en"> <!-- 定义HTML文档，lang属性指定文档语言为英语 -->
+
+<head>
+    <meta charset="UTF-8">  <!-- 设置文档的字符编码为UTF-8，以确保支持国际化字符 -->
+    <title>PaddlePaddle Network Designer</title> <!-- 设置网页标题，这里标题被设置为"Title"，但通常这里会放置更具描述性的标题 -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+
+<body> <!-- 网页的主体部分开始 -->
+
+<!-- 标题栏 -->
+<div style="background-color: #ffffff; height:25px; padding: 15px 15px;"> <!-- 创建一个div元素作为导航栏，设置背景色为白色，高度为25px，内边距为上下15px，左右250px -->
+    <a href="./" style="text-decoration: none; color: #000; font-size:18px"> <!-- 创建一个超链接（a标签），href属性指定链接到当前页面（"./"），并设置样式 -->
+        <strong>PaddlePaddle Network Designer</strong>
+    </a>
+</div>
+
+<!-- 主体框 -->
+<div class="container">
+    <!-- 导航栏 -->
+    <div class="navbar"><p>加载中...</p></div>
+    <!-- 这里是画布区域，但实际上我们将它用作一个容器来动态添加内容 -->
+    <div class="canvas" id="elements-canvas"></div>
+</div>
+
+
+<!-- 将<script>标签放在<body>标签的底部，以确保DOM元素已加载 -->
+<script>
+    // JavaScript代码
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/get_navigation_items') // 调用 fetch API 获取导航栏数据
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json(); // 解析JSON响应
+            })
+            .then(data => {
+                // 假设data是一个数组，每个元素都是一个导航项
+                const navbar = document.querySelector('.navbar');
+                navbar.innerHTML = ''; // 清空现有的导航项
+                data.forEach(item => {
+                    const btn = document.createElement('button');
+                    btn.textContent = item;
+                    btn.classList.add('nav-btn'); // 添加类名以便后续添加样式或事件监听器
+                    btn.addEventListener('click', function() {
+                        // 点击后，在.draggable-container中新增一个可拖拽的元素
+                        console.log('clicked');
+                        addDraggableElement(btn.textContent, 100, 100); // 假设默认位置是(100, 100)
+                        });
+                    navbar.appendChild(btn); // 动态添加按钮到导航栏
+                });
+
+                // 定义一个函数来添加可拖拽元素
+                function addDraggableElement(text, x, y) {
+                    // 获取elements-canvas的中心点坐标
+                    const canvas = document.getElementById(`elements-canvas`);
+                    const centerX = canvas.offsetLeft + (canvas.clientWidth / 2);
+                    const centerY = canvas.offsetTop + (canvas.clientHeight / 2);
+
+                    const elem = document.createElement('div');
+                    elem.classList.add('draggable');
+                    elem.style.left = `${centerX}px`;
+                    elem.style.top = `${centerY}px`;
+                    elem.style.position = 'absolute'; // 确保元素是定位的
+                    elem.textContent = text;
+
+                    // 拖拽逻辑（简化版）
+                    let isDragging = false;
+                    let startX, startY;
+
+                    elem.addEventListener('mousedown', function(e) {
+                        isDragging = true;
+                        startX = e.clientX - elem.offsetLeft;
+                        startY = e.clientY - elem.offsetTop;
+                    });
+
+                    document.addEventListener('mousemove', function(e) {
+                        if (isDragging) {
+                            elem.style.left = `${e.clientX - startX}px`;
+                            elem.style.top = `${e.clientY - startY}px`;
+                        }
+                    });
+
+                    document.addEventListener('mouseup', function() {
+                        isDragging = false;
+                    });
+
+                    document.getElementById(`elements-canvas`).appendChild(elem);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching navigation items:', error);
+                // 可以选择在这里添加错误处理逻辑，比如显示一个错误消息
+            });
+    });
+
+    let previousSelectedElement = null;
+    let selectedElement = null; // 用于跟踪当前选中的元素
+    let connections = []; // 用于存储正在连接的两个元素
+
+
+    // 监听全局的mousedown事件，以便检测Ctrl键
+    document.addEventListener('mousedown', function(e) {
+        if (e.ctrlKey && e.target.classList.contains('draggable')) {
+            // 如果Ctrl键被按下且点击的是可拖拽元素
+            selectedElement = e.target; // 更新当前选中的元素
+
+            // 如果已经有一个元素被选中，则添加记录
+            if (previousSelectedElement) {
+                const new_connection = [previousSelectedElement, selectedElement];
+                connections.push(new_connection);
+                previousSelectedElement = null; // 清除上一个选中的元素
+                console.log('connected', new_connection);
+            } else {
+                previousSelectedElement = selectedElement; // 记录上一个选中的元素
+            }
+        }
+    });
+
+    function drawAllConnections() {
+        // 清除旧的连线
+        // 选择所有具有指定class的元素，遍历这些元素并逐一从DOM中移除它们
+        var elements = document.getElementById('elements-canvas').querySelectorAll('.' + 'connection');
+        elements.forEach(function(element) {
+            element.parentNode.removeChild(element);
+        });
+        var elements = document.getElementById('elements-canvas').querySelectorAll('.' + 'arrow');
+        elements.forEach(function(element) {
+            element.parentNode.removeChild(element);
+        });
+
+        for (let i = 0; i < connections.length; i++) {
+            console.log('drawing connection', connections[i]);
+            const [fromElement, toElement] = connections[i];
+
+            // 创建连线的 DOM 元素
+            const line = document.createElement('div');
+            line.classList.add('connection');
+
+            // 计算连线的起点和终点坐标
+            const fromRect = fromElement.getBoundingClientRect();
+            const toRect = toElement.getBoundingClientRect();
+
+            // 简单的连线绘制逻辑：从 fromElement 的中心到 toElement 的中心
+            // 这里可以使用更复杂的路径计算库（如 Fabric.js, D3.js 等）来获取更准确的路径
+            const centerXFrom = fromRect.left + fromRect.width / 2;
+            const centerYFrom = fromRect.top + fromRect.height / 2;
+            const centerXTo = toRect.left + toRect.width / 2;
+            const centerYTo = toRect.top + toRect.height / 2;
+            const centerX = (centerXFrom + centerXTo) / 2;
+            const centerY = (centerYFrom + centerYTo) / 2;
+
+            // 设置连线的位置和大小
+            const lineLength = Math.sqrt(Math.pow(centerXTo - centerXFrom, 2) + Math.pow(centerYTo - centerYFrom, 2));
+            line.style.height = `${lineLength}px`; // 线的长度（足够长以覆盖两点）
+            line.style.left = `${centerXFrom}px`;
+            line.style.top = `${centerYFrom}px`;
+            line.style.transformOrigin = `0 0`;
+            line.style.transform = `rotate(${0-Math.atan2(centerXTo - centerXFrom, centerYTo - centerYFrom) * 180 / Math.PI}deg)`;
+
+            // 可选：根据方向添加箭头
+            const arrow = document.createElement('div');
+            arrow.classList.add('arrow');
+            arrow.style.left = `${centerXTo - 5}px`; // 箭头位于终点的左侧
+            arrow.style.top = `${centerYTo - 5}px`; // 箭头尖部位于终点处
+
+            document.getElementById('elements-canvas').appendChild(arrow);
+            document.getElementById('elements-canvas').appendChild(line);
+        }
+    }
+
+    // 鼠标抬起的时候，绘制所有的连线
+    document.addEventListener('mouseup', function() {
+        console.log('mouseup');
+        drawAllConnections();
+    });
+
+
+</script>
+
+
+
+</body> <!-- 网页的主体部分结束 -->
+</html> <!-- HTML文档结束 -->
+
+

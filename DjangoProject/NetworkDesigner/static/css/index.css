@@ -1,0 +1,83 @@
+.container {
+    display: flex; /* 创建一个flex容器 */
+    height: 100vh; /* 占据视口的100%高度 */
+}
+
+.navbar {
+    background-color: rgb(248, 247, 252); /* 导航栏背景色 */
+    width: 20%; /* 导航栏宽度 */
+    min-width: 200px; /* 最小宽度限制 */
+    overflow: auto; /* 溢出内容自动出现滚动条 */
+    /* 可以在这里添加更多导航栏样式 */
+}
+
+.nav-btn {
+    /* 按钮的基本样式 */
+    display: block; /* 使按钮显示为块级元素 */
+    width: 100%; /* 使按钮宽度充满父元素 */
+    padding: 10px 20px; /* 按钮的内边距 */
+    margin: 5px; /* 按钮的外边距 */
+    font-size: 16px; /* 字体大小 */
+    color: #fff; /* 字体颜色 */
+    background-color: #007bff; /* 背景颜色 */
+    border: none; /* 移除边框 */
+    border-radius: 5px; /* 边框圆角 */
+    cursor: pointer; /* 鼠标悬停时显示指针样式 */
+    text-align: left; /* 文本对齐方式 */
+    text-decoration: none; /* 移除文本下划线（如果按钮是链接的话） */
+
+    /* 可选：添加悬停（hover）和激活（active）状态样式 */
+    &:hover {
+        background-color: #0056b3; /* 鼠标悬停时的背景颜色 */
+    }
+
+    &:active {
+        background-color: #004085; /* 按钮被点击时的背景颜色 */
+    }
+}
+
+.canvas {
+    background-color: #f0f0f0; /* 画布背景色 */
+    flex: 1; /* 画布占据剩余空间 */
+    /* 可以在这里添加更多画布样式 */
+}
+
+.draggable {
+    position: relative;
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    justify-content: center; /* 水平居中 */
+    min-width: 100px; /* 最小宽度，根据需要调整 */
+    min-height: 10px; /* 最小高度，根据需要调整 */
+    padding: 10px; /* 内边距，根据需要调整 */
+    background-color: #007b7f; /* 背景色，根据需要调整 */
+    color: white; /* 设置文本颜色为白色，以便在红色背景上清晰可见 */
+    cursor: move;
+    user-select: none; /* 防止文本选择 */
+    border: 1px solid #000; /* 可选：添加边框以更清楚地看到方块的边界 */
+    border-radius: 5px; /* 边框圆角 */
+    /* 如果需要处理多行文本，可以添加以下样式 */
+    white-space: nowrap; /* 保持文本在一行内（如果需要） */
+    overflow: hidden; /* 如果文本超出容器，则隐藏超出的部分 */
+    text-overflow: ellipsis; /* 如果文本超出容器，则用省略号表示（仅适用于单行文本） */
+    z-index: 10; /* 使方块在画布上显示在最前面 */
+    /* 如果需要文本换行，则移除 white-space 和 text-overflow 属性，并设置合适的宽度和高度 */
+}
+
+.connection {
+    position: absolute;
+    width: 2px; /* 线的宽度 */
+    background-color: red; /* 线的颜色 */
+    pointer-events: none; /* 防止线被点击 */
+    z-index: 1; /* 使线在方块上显示在最前面 */
+}
+
+.arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid black; /* 箭头颜色 */
+    pointer-events: none; /* 防止箭头被点击 */
+}
