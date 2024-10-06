@@ -27,26 +27,26 @@
 
     <!-- 信息栏/内容栏 -->
     <div class="content" id="content-block">
-        <div class="element-information" id="item1">
-            <h2>块信息</h2> <!-- 标题部分，表示这是块信息 -->
-            <div>
-                <!-- 这里可以动态插入Name的值 -->
-                Name: 示例名称
+        <div class="element-information" id="content-item1">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h2 style="margin: 0;">块</h2> <!-- 标题部分，表示这是块信息 -->
+                <button id="content-item1-fresh" style="margin-left: 10px;">刷新</button>
             </div>
-            <div>
-                <!-- 这里可以动态插入FullName的值 -->
-                FullName: 示例全名
-            </div>
+            <hr> <!-- 分割线 -->
+            <select id="networkNodeSelector"></select> <!-- 创建一个下拉列表，用于选择网络节点 -->
+            <div class="element-information-showbox"></div>
         </div>
-        <div class="content-item" id="item2" style="display:none;">这是条目 2 的内容</div>
-        <div class="content-item" id="item3" style="display:none;">这是条目 3 的内容</div>
+        <div class="content-item" id="content-item2" style="display:none;">
+            <h2>连接</h2> <!-- 标题部分，表示这是块信息 -->
+        </div>
+        <div class="content-item" id="content-item3" style="display:none;">这是条目 3 的内容</div>
     </div>
 
     <!-- 侧边栏 -->
     <div class="sidebar">
-        <button class="sidebar-item" data-content="item1">条目 1</button>
-        <button class="sidebar-item" data-content="item2">条目 2</button>
-        <button class="sidebar-item" data-content="item3">条目 3</button>
+        <button class="sidebar-item" data-content="content-item1">块</button>
+        <button class="sidebar-item" data-content="content-item2">连接</button>
+        <button class="sidebar-item" data-content="content-item3">条目 3</button>
     </div>
 
 
@@ -83,6 +83,59 @@
             document.getElementById(contentId).style.display = 'block';
         });
     });
+
+    function refreshNodeSelector() {
+        var selector = document.getElementById('networkNodeSelector');
+        // 清空现有的选项
+        selector.innerHTML = '';
+
+        // 添加一个空元素作为默认选项
+        var option = document.createElement('option');
+        selector.appendChild(option);
+
+        // 遍历nodes数组，为每个节点创建一个<option>元素
+        canvas_obj.nodes.forEach(function(node) {
+            var option = document.createElement('option');
+            option.value = node.nodeId; // 可以将id作为value，或者根据需要设置其他值
+            // option.value = node.obj;
+            option.textContent = `${node.fullName}[ID:${node.nodeId}]`; // 设置显示的文本
+            selector.appendChild(option); // 将<option>添加到<select>中
+        });
+    }
+
+    // 监听按钮点击事件
+    document.getElementById('content-item1-fresh').addEventListener('click', function() {
+        refreshNodeSelector(); // 调用refreshNodeSelector方法来更新select元素
+    });
+
+    // 监听下拉列表的变化
+    document.getElementById('networkNodeSelector').addEventListener('change', function(event) {
+        const showbox = document.querySelector('.element-information-showbox');
+        // const selectedNode = event.target.value;
+        const selectedNode = canvas_obj.nodes.find(node => node.nodeId == event.target.value); // 根据id查找节点对象
+
+        // 清空showbox的内容
+        showbox.innerHTML = '';
+
+        // 判断是否为空
+        if (!selectedNode) {
+            ; // 什么都不做
+        } else {
+            // 增加内容
+            const name_div = document.createElement('div');
+            name_div.textContent = `名称: ${selectedNode.name}`;
+            showbox.appendChild(name_div);
+
+            const fullname_div = document.createElement('div');
+            fullname_div.textContent = `全名: ${selectedNode.fullName}`;
+            showbox.appendChild(fullname_div);
+
+            const nodeid_div = document.createElement('div');
+            nodeid_div.textContent = `节点ID: ${selectedNode.nodeId}`;
+            showbox.appendChild(nodeid_div);
+        }
+    });
+
 </script>
 
 

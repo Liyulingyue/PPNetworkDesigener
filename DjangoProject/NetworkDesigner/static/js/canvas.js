@@ -11,9 +11,14 @@ function drawAllConnections() {
         element.parentNode.removeChild(element);
     });
 
+    // const canvas_left = document.getElementById('elements-canvas').getBoundingClientRect().left;
+    // const canvas_top = document.getElementById('elements-canvas').getBoundingClientRect().top;
+    canvas_left = 0;
+    canvas_top = 0;
+
     for (let i = 0; i < connections.length; i++) {
-        console.log('drawing connection', connections[i]);
-        const [fromElement, toElement] = connections[i];
+        const fromElement = connections[i].fromNode;
+        const toElement = connections[i].toNode;
 
         // 创建连线的 DOM 元素
         const line = document.createElement('div');
@@ -35,20 +40,20 @@ function drawAllConnections() {
         // 设置连线的位置和大小
         const lineLength = Math.sqrt(Math.pow(centerXTo - centerXFrom, 2) + Math.pow(centerYTo - centerYFrom, 2));
         line.style.height = `${lineLength}px`; // 线的长度（足够长以覆盖两点）
-        line.style.left = `${centerXFrom}px`;
-        line.style.top = `${centerYFrom}px`;
+        line.style.left = `${centerXFrom - canvas_left}px`;
+        line.style.top = `${centerYFrom - canvas_top}px`;
         line.style.transformOrigin = `0 0`;
         line.style.transform = `rotate(${0-Math.atan2(centerXTo - centerXFrom, centerYTo - centerYFrom) * 180 / Math.PI}deg)`;
 
         // 可选：根据方向添加箭头
         const arrow = document.createElement('div');
         arrow.classList.add('arrow');
-        arrow.style.left = `${centerX}px`; // 箭头位于终点的左侧
-        arrow.style.top = `${centerY}px`; // 箭头尖部位于终点处
+        arrow.style.left = `${centerX - canvas_left}px`; // 箭头位于终点的左侧
+        arrow.style.top = `${centerY - canvas_top}px`; // 箭头尖部位于终点处
         arrow.style.transformOrigin = `0 0`;
         arrow.style.transform = `rotate(${0-Math.atan2(centerXTo - centerXFrom, centerYTo - centerYFrom) * 180 / Math.PI}deg)`;
 
-
+        // 将连线和箭头添加到画布中
         document.getElementById('elements-canvas').appendChild(arrow);
         document.getElementById('elements-canvas').appendChild(line);
     }
@@ -61,10 +66,8 @@ function updateConnections(target_element) {
 
     // 如果已经有一个元素被选中，则添加记录
     if (previousSelectedElement && previousSelectedElement !== selectedElement) {
-        const new_connection = [previousSelectedElement, selectedElement];
-        canvas_obj.connections.push(new_connection);
+        canvas_obj.addConnection(previousSelectedElement, selectedElement);
         previousSelectedElement = null; // 清除上一个选中的元素
-        console.log('connected', new_connection);
     } else {
         previousSelectedElement = selectedElement; // 记录上一个选中的元素
     }

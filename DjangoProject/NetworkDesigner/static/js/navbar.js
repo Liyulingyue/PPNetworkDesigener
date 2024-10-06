@@ -43,7 +43,7 @@ function createNavbarButtons(obj, parentElement = navbar, depth = 0, parentName 
             const { folder, folderContainer } = createSingleNavbarFolder(key);
             parentElement.appendChild(folder);
             parentElement.appendChild(folderContainer);
-            const newParentName = `${parentName}.${key}`;
+            const newParentName = parentName ? `${parentName}.${key}` : key; // 避免paddle以.开头
             createNavbarButtons(obj[key], folderContainer, depth + 1, newParentName);
         } else {
             // 如果值不是对象，则创建按钮

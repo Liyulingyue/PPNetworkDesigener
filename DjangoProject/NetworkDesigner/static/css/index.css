@@ -90,7 +90,7 @@
 }
 
 .connection {
-    position: relative;
+    position: absolute;
     width: 2px; /* 线的宽度 */
     background-color: red; /* 线的颜色 */
     pointer-events: none; /* 防止线被点击 */
@@ -98,13 +98,14 @@
 }
 
 .arrow {
-    position: relative;
+    position: absolute;
     width: 0;
     height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
     border-top: 5px solid red; /* 箭头颜色 */
     pointer-events: none; /* 防止箭头被点击 */
+    z-index: 2; /* 使线在方块上显示在最前面 */
 }
 
 .hidden {
@@ -140,14 +141,38 @@
 
 .content {
     position: block;
-    width: 15; /* 内容区宽度 */
+    width: 15%; /* 内容区宽度 */
     padding: 20px;
     box-sizing: border-box;
     overflow-y: auto; /* 如果内容太多，可以滚动 */
     float: right;
 }
 
+.element-information {
+    padding: 0px;
+}
+
+.element-information-showbox {
+    padding: 0px;
+}
+
 .content-item {
-    padding: 10px;
-    border-top: 1px solid #ccc;
+    padding: 0px;
+}
+
+/* 设置下拉框的样式 */
+#networkNodeSelector {
+    width: 100%; /* 使下拉框宽度为100% */
+    font-size: 16px; /* 稍微增大字体 */
+    padding: 8px; /* 增加内边距，使选项文字不会紧贴边框 */
+    border-radius: 8px; /* 设置边角圆滑 */
+    border: 1px solid #ccc; /* 可选：添加边框，并设置边框颜色 */
+    /* 可选：添加一些阴影效果，使下拉框看起来更加立体 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    /* 给option设置字体 */
+    option {
+        font-size: 16px; /* 设置字体大小 */
+        padding: 0px; /* 设置内边距 */
+    }
 }

@@ -38,4 +38,7 @@ function addDraggableElement(navButton, x, y) {
     });
 
     document.getElementById(`elements-canvas`).appendChild(elem);
+    console.log(canvas_obj);
+    canvas_obj.addNode(text, fullName, elem);
+    console.log(canvas_obj);
 }
