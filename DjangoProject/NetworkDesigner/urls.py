@@ -23,4 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
     path('get_navigation_items', views.get_navigation_items, name="get_navigation_items"),
+    path('get_api_details/<str:full_name>/', views.get_api_details, name="get_api_details"),
 ]

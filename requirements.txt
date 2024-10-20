@@ -1,2 +1,4 @@
+setuptools
 django
 erniebot
+paddlepaddle

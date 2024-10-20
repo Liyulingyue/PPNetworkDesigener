@@ -29,12 +29,45 @@
     <div class="content" id="content-block">
         <div class="element-information" id="content-item1">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h2 style="margin: 0;">块</h2> <!-- 标题部分，表示这是块信息 -->
+                <h2 style="margin: 0;">节点</h2> <!-- 标题部分，表示这是块信息 -->
                 <button id="content-item1-fresh" style="margin-left: 10px;">刷新</button>
             </div>
             <hr> <!-- 分割线 -->
-            <select id="networkNodeSelector"></select> <!-- 创建一个下拉列表，用于选择网络节点 -->
-            <div class="element-information-showbox"></div>
+            <div>
+                <h3>选择节点</h3>
+                <select id="networkNodeSelector"></select> <!-- 创建一个下拉列表，用于选择网络节点 -->
+            </div>
+            <div>
+                <h3>属性</h3>
+                <div class="element-information-features"></div> <!-- 创建一个div元素，用于显示节点属性 -->
+            </div>
+            <hr> <!-- 分割线 -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">参数</h3> <!-- 标题部分，表示这是块信息 -->
+                    <button id="content-item1-addparams" style="margin-left: 10px;">新增</button>
+                </div>
+                <div class="element-information-params"></div> <!-- 创建一个div元素，用于显示节点属性 -->
+            </div>
+            <hr> <!-- 分割线 -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">输入</h3>
+                    <button id="content-item1-addinputs" style="margin-left: 10px;">新增</button>
+                </div>
+                <div class="element-information-inputs"></div> <!-- 创建一个div元素，用于显示节点属性 -->
+            </div>
+            <hr> <!-- 分割线 -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">返回值</h3>
+                    <button id="content-item1-addoutputs" style="margin-left: 10px;">新增</button>
+                </div>
+                <div class="element-information-outputs"></div> <!-- 创建一个div元素，用于显示节点属性 -->
+            </div>
+            <hr> <!-- 分割线 -->
+
+
         </div>
         <div class="content-item" id="content-item2" style="display:none;">
             <h2>连接</h2> <!-- 标题部分，表示这是块信息 -->
@@ -44,7 +77,7 @@
 
     <!-- 侧边栏 -->
     <div class="sidebar">
-        <button class="sidebar-item" data-content="content-item1">块</button>
+        <button class="sidebar-item" data-content="content-item1">节点</button>
         <button class="sidebar-item" data-content="content-item2">连接</button>
         <button class="sidebar-item" data-content="content-item3">条目 3</button>
     </div>
@@ -110,29 +143,168 @@
 
     // 监听下拉列表的变化
     document.getElementById('networkNodeSelector').addEventListener('change', function(event) {
-        const showbox = document.querySelector('.element-information-showbox');
+        const features_box = document.querySelector('.element-information-features');
+        const params_box = document.querySelector('.element-information-params');
+        const inputs_box = document.querySelector('.element-information-inputs');
+        const outputs_box = document.querySelector('.element-information-outputs');
+
         // const selectedNode = event.target.value;
         const selectedNode = canvas_obj.nodes.find(node => node.nodeId == event.target.value); // 根据id查找节点对象
 
         // 清空showbox的内容
-        showbox.innerHTML = '';
+        features_box.innerHTML = '';
+        params_box.innerHTML = '<table><tbody></tbody></table>';
+        inputs_box.innerHTML = '<table><tbody></tbody></table>';
+        outputs_box.innerHTML = '<table><tbody></tbody></table>';
 
         // 判断是否为空
         if (!selectedNode) {
             ; // 什么都不做
         } else {
-            // 增加内容
+            // features_box
             const name_div = document.createElement('div');
             name_div.textContent = `名称: ${selectedNode.name}`;
-            showbox.appendChild(name_div);
+            features_box.appendChild(name_div);
 
             const fullname_div = document.createElement('div');
             fullname_div.textContent = `全名: ${selectedNode.fullName}`;
-            showbox.appendChild(fullname_div);
+            features_box.appendChild(fullname_div);
 
             const nodeid_div = document.createElement('div');
             nodeid_div.textContent = `节点ID: ${selectedNode.nodeId}`;
-            showbox.appendChild(nodeid_div);
+            features_box.appendChild(nodeid_div);
+
+            const type_div = document.createElement('div');
+            type_div.textContent = `节点类型: ${selectedNode.is_class == 1 ? '类' : selectedNode.is_class == 0 ? '函数' : '未知'}`;
+            features_box.appendChild(type_div);
+
+            // params_box
+            const paramsFields = ['名称', '必要', '取值', '操作'];
+
+            // 表头
+            const paramsTable = params_box.querySelector('table');
+            const paramsTableHead = document.createElement('thead');
+            const paramsTableRowHead = document.createElement('tr');
+            paramsFields.forEach(text => {
+                const th = document.createElement('th');
+                th.textContent = text;
+                paramsTableRowHead.appendChild(th);
+            });
+            paramsTableHead.appendChild(paramsTableRowHead);
+            paramsTable.appendChild(paramsTableHead);
+
+            const paramsTableBody = params_box.querySelector('tbody');
+            for (let item of selectedNode.parameters) {
+                const row = document.createElement('tr');
+                for (let idx=0; idx<paramsFields.length; idx++) {
+                    const cell = document.createElement('td');
+                    if (idx < 3) {
+                        if (paramsFields[idx] != '必要') { // 必要参数不能修改
+                            const input = document.createElement('input');
+                            input.value = item[idx];
+                            input.style.border = 'none'; // 移除边框
+                            input.style.width = '90%'; // 略微小一点，避免超出
+                            cell.appendChild(input);
+                        } else {
+                            cell.textContent = item[idx];
+                        }
+                    } else {
+                        // 增加 +, - 按钮
+                        const button_add = document.createElement('button');
+                        const button_sub = document.createElement('button');
+                        button_add.textContent = '+';
+                        button_sub.textContent = '-';
+                        cell.appendChild(button_add);
+                        cell.appendChild(button_sub);
+                    }
+                    row.appendChild(cell);
+                }
+                paramsTableBody.appendChild(row);
+            }
+
+            // inputs_box
+            const inputsFields = ['名称', '必要', '取值', '操作'];
+
+            // 表头
+            const inputsTable = inputs_box.querySelector('table');
+            const inputsTableHead = document.createElement('thead');
+            const inputsTableRowHead = document.createElement('tr');
+            inputsFields.forEach(text => {
+                const th = document.createElement('th');
+                th.textContent = text;
+                inputsTableRowHead.appendChild(th);
+            });
+            inputsTableHead.appendChild(inputsTableRowHead);
+            inputsTable.appendChild(inputsTableHead);
+
+            const inputsTableBody = inputs_box.querySelector('tbody');
+            for (let item of selectedNode.inputs) {
+                const row = document.createElement('tr');
+                for (let idx=0; idx<inputsFields.length; idx++) {
+                    const cell = document.createElement('td');
+                    if (idx < 3) {
+                        if (inputsFields[idx] != '必要') { // 必要参数不能修改
+                            const input = document.createElement('input');
+                            input.value = item[idx];
+                            input.style.border = 'none'; // 移除边框
+                            input.style.width = '90%'; // 略微小一点，避免超出
+                            cell.appendChild(input);
+                        } else {
+                            cell.textContent = item[idx];
+                        }
+                    } else {
+                        // 增加 +, - 按钮
+                        const button_add = document.createElement('button');
+                        const button_sub = document.createElement('button');
+                        button_add.textContent = '+';
+                        button_sub.textContent = '-';
+                        cell.appendChild(button_add);
+                        cell.appendChild(button_sub);
+                    }
+                    row.appendChild(cell);
+                }
+                inputsTableBody.appendChild(row);
+            }
+
+            // outputs_box
+            const outputsFields = ['名称', '操作'];
+
+            // 表头
+            const outputsTable = outputs_box.querySelector('table');
+            const outputsTableHead = document.createElement('thead');
+            const outputsTableRowHead = document.createElement('tr');
+            outputsFields.forEach(text => {
+                const th = document.createElement('th');
+                th.textContent = text;
+                outputsTableRowHead.appendChild(th);
+            });
+            outputsTableHead.appendChild(outputsTableRowHead);
+            outputsTable.appendChild(outputsTableHead);
+
+            const outputsTableBody = outputs_box.querySelector('tbody');
+            for (let item of selectedNode.outputs) {
+                const row = document.createElement('tr');
+                for (let idx=0; idx<outputsFields.length; idx++) {
+                    const cell = document.createElement('td');
+                    if (idx < 1) {
+                        const input = document.createElement('input');
+                        input.value = item[idx];
+                        input.style.border = 'none'; // 移除边框
+                        input.style.width = '90%'; // 略微小一点，避免超出
+                        cell.appendChild(input);
+                    } else {
+                        // 增加 +, - 按钮
+                        const button_add = document.createElement('button');
+                        const button_sub = document.createElement('button');
+                        button_add.textContent = '+';
+                        button_sub.textContent = '-';
+                        cell.appendChild(button_add);
+                        cell.appendChild(button_sub);
+                    }
+                    row.appendChild(cell);
+                }
+                outputsTableBody.appendChild(row);
+            }
         }
     });
 

@@ -176,3 +176,61 @@
         padding: 0px; /* 设置内边距 */
     }
 }
+
+.element-information-params table,
+.element-information-inputs table,
+.element-information-outputs table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* 确保列宽是固定的 */
+}
+
+.element-information-params th,
+.element-information-params td,
+.element-information-inputs th,
+.element-information-inputs td,
+.element-information-outputs th,
+.element-information-outputs td {
+    border: 2px solid #ccc; /* 添加边框以区分单元格 */
+    padding: 0px; /* 添加内边距 */
+    text-align: left; /* 文本左对齐 */
+}
+
+/* 分配列宽 */
+.element-information-params th:nth-child(1),
+.element-information-params td:nth-child(1),
+.element-information-inputs th:nth-child(1),
+.element-information-inputs td:nth-child(1) {
+    width: 25%; /* 名称列占据25%的宽度 */
+}
+
+.element-information-outputs th:nth-child(1),
+.element-information-outputs td:nth-child(1) {
+    width: 50%; /* 名称列占据25%的宽度 */
+}
+
+.element-information-params th:nth-child(2),
+.element-information-params td:nth-child(2),
+.element-information-inputs th:nth-child(2),
+.element-information-inputs td:nth-child(2) {
+    width: 15%; /* 是否字典型参数列占据10%的宽度 */
+}
+
+.element-information-outputs th:nth-child(2),
+.element-information-outputs td:nth-child(2) {
+    width: 50%; /* 取值列占据剩余的55%宽度 */
+}
+
+.element-information-params th:nth-child(3),
+.element-information-params td:nth-child(3),
+.element-information-inputs th:nth-child(3),
+.element-information-inputs td:nth-child(3) {
+    width: 40%; /* 必要列占据10%的宽度 */
+}
+
+.element-information-params th:nth-child(4),
+.element-information-params td:nth-child(4),
+.element-information-inputs th:nth-child(4),
+.element-information-inputs td:nth-child(4) {
+    width: 20%; /* 取值列占据剩余的55%宽度 */
+}
